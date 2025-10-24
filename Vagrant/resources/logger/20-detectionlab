@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Safer color handling
+txtcyan=$(tput setaf 6; tput bold)
+txtwhite=$(tput setaf 7; tput bold)
+reset=$(tput sgr0)
+
+cat <<EOM
+${txtcyan}
+ ░▒▓███████▓▒░░▒▓██████▓▒░ ░▒▓██████▓▒░  
+░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
+░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░        
+ ░▒▓██████▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░        
+       ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░        
+       ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
+░▒▓███████▓▒░ ░▒▓██████▓▒░ ░▒▓██████▓▒░  
+${txtwhite}
+      Detection Laboratory
+         for Blue Teams
+${reset}
+EOM
