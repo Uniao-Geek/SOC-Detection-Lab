@@ -1,0 +1,23 @@
+# These are supported funding model platforms
+
+github: mrhenrike # GitHub Sponsors - Principal sponsor da Uniao-Geek
+patreon: mrhenrike # Patreon - Uniao-Geek organization
+open_collective: mrhenrike # Open Collective - Uniao-Geek
+ko_fi: mrhenrike # Ko-fi - Uniao-Geek
+tidelift: # Tidelift platform (if applicable)
+community_bridge: # Community Bridge project (if applicable)
+liberapay: # Liberapay username (if applicable)
+issuehunt: # IssueHunt username (if applicable)
+lfx_crowdfunding: # LFX Crowdfunding project (if applicable)
+polar: # Polar username (if applicable)
+buy_me_a_coffee: mrhenrike # Buy Me a Coffee - Uniao-Geek
+thanks_dev: # thanks.dev username (if applicable)
+custom: # Custom sponsorship URLs (if applicable)
+
+# Contributors:
+# - mrhenrike (Principal contributor and maintainer)
+# - bhbrandon (Contributor)
+# 
+# Organization: Uniao-Geek (União Geek)
+# Project: SOC Detection Laboratory
+# Description: Modern cybersecurity lab environment for threat detection, hunting, and SOC training
