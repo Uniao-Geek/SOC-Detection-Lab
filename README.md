@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # SOC Detection Laboratory
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -25,6 +24,7 @@ The **SOC Detection Laboratory** is a comprehensive, modern cybersecurity lab en
 ### 👥 Contributors
 
 - **mrhenrike** - Lead Developer & Security Researcher
+- **bhbrandon** - Contributor
 
 ## 🏗️ Lab Architecture
 
@@ -83,7 +83,7 @@ The **SOC Detection Laboratory** is a comprehensive, modern cybersecurity lab en
 
 4. **Access Splunk:**
    - **URL:** https://192.168.56.105:8000
-   - **Username:** admin
+   - **User:** admin
    - **Password:** changeme
 
 ### ⚙️ Automatic Configurations
@@ -97,7 +97,7 @@ The system is automatically configured with:
 - ✅ **Timezone**: UTC
 - ✅ **Network**: Optimized lab configuration
 
-## 🔧 Scripts and Tools
+## 🔧 Scripts & Tools
 
 ### 📜 Configuration Scripts
 
@@ -119,7 +119,7 @@ The system is automatically configured with:
 - `velociraptor_only` - Velociraptor only
 - `fix_network_only` - Network fix only
 
-## 🌐 Access and URLs
+## 🌐 Access & URLs
 
 ### 🔗 Main URLs
 
@@ -138,7 +138,7 @@ The system is automatically configured with:
 | 8000 | 8000 | Splunk Web UI |
 | 8089 | 8089 | Splunk Management API |
 
-## 📊 Monitoring and Logs
+## 📊 Monitoring & Logs
 
 ### 📝 Important Logs
 
@@ -179,14 +179,14 @@ journalctl -f
    - Check VirtualBox logs
 
 2. **Network issues:**
-   - Verify IP 192.168.56.105 is free on the network
+   - Check if IP 192.168.56.105 is free on the network
    - Run `./rebuild-logger.sh` for clean rebuild
    - Check firewall settings
 
 3. **Splunk not accessible:**
    - Wait 5-10 minutes after complete boot
    - Check logs: `journalctl -u splunkd`
-   - Verify service is running: `systemctl status splunkd`
+   - Check if service is running: `systemctl status splunkd`
 
 4. **GRUB timeout:**
    - Run `scripts/configure-grub.sh` manually
@@ -218,7 +218,7 @@ free -h
 - **Quick setup** for testing and development
 
 ### Cloud Platforms
-- **AWS** - Terraform deployment
+- **AWS** - Deploy with Terraform
 - **Azure** - Terraform + Ansible
 - **ESXi** - Terraform + Ansible
 - **Proxmox** - Terraform + Ansible
@@ -252,7 +252,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 This project is based on the original [DetectionLab](https://github.com/clong/DetectionLab) by Chris Long, with significant improvements and modifications for modern SOC operations.
 
-### 🏆 Special Acknowledgments
+### 🏆 Special Thanks
 
 - **Chris Long** - Original DetectionLab creator
 - **Palantir** - Windows Event Forwarding configurations
@@ -262,7 +262,7 @@ This project is based on the original [DetectionLab](https://github.com/clong/De
 - **Zeek** - Network analysis framework
 - **Velociraptor** - Digital forensics platform
 
-## 📞 Support and Contact
+## 📞 Support & Contact
 
 For support and questions:
 
@@ -275,7 +275,3 @@ For support and questions:
 **SOC Detection Laboratory** - Building the future of cybersecurity threat detection 🛡️
 
 *Developed with ❤️ by Uniao-Geek*
-=======
-# SOC-Detection-Lab
-A modern cybersecurity detection laboratory for threat hunting, adversary simulation, and SOC training
->>>>>>> 94da3a75c6eca092ad10da402c3addaf4d92ef85

@@ -24,6 +24,7 @@ O **SOC Detection Laboratory** é um ambiente completo e moderno de laboratório
 ### 👥 Contribuidores
 
 - **mrhenrike** - Desenvolvedor Líder e Pesquisador de Segurança
+- **bhbrandon** - Contribuidor
 
 ## 🏗️ Arquitetura do Laboratório
 
