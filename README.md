@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # SOC Detection Laboratory
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -274,3 +275,7 @@ For support and questions:
 **SOC Detection Laboratory** - Building the future of cybersecurity threat detection 🛡️
 
 *Developed with ❤️ by Uniao-Geek*
+=======
+# SOC-Detection-Lab
+A modern cybersecurity detection laboratory for threat hunting, adversary simulation, and SOC training
+>>>>>>> 94da3a75c6eca092ad10da402c3addaf4d92ef85
