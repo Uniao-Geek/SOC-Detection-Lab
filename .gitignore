@@ -1,0 +1,134 @@
+# SOC Detection Laboratory - Git Ignore File
+
+# Vagrant
+.vagrant/
+Vagrantfile.local
+vagrant-*.log
+
+# VirtualBox
+*.vbox
+*.vdi
+*.vmdk
+*.vmsd
+*.vmsn
+*.vmss
+*.vmx
+*.vmxf
+
+# VMware
+*.vmx
+*.vmxf
+*.vmdk
+*.hlog
+*.log
+*.nvram
+*.vmsd
+*.vmsn
+*.vmss
+*.vmtx
+*.vmtm
+
+# Packer
+packer_cache/
+*.box
+*.ova
+*.ovf
+
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+*.tfplan
+
+# Ansible
+*.retry
+.ansible/
+ansible.cfg.local
+
+# Logs
+*.log
+logs/
+log/
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+*.lnk
+desktop.ini
+
+# Sensitive files
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+.env.local
+.env.production
+
+# Build artifacts
+build/
+dist/
+target/
+
+# Node modules (if any)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python (if any)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Test files
+test-results/
+coverage/
+
+# Documentation build
+docs/_build/
+site/
+
+# Local configuration
+local.yml
+local.json
+config.local.*
+
+# CI/CD
+.github/workflows/local.yml
