@@ -244,6 +244,18 @@ Contribuições são bem-vindas! Por favor, siga estes passos:
 - Mantenha a documentação atualizada
 - Siga as convenções de código existentes
 
+---
+
+<!-- LEGAL-NOTICE-UG-MRH -->
+
+## Aviso legal / legal notice
+
+- **Uso** — Conteúdo para educação, pesquisa e testes **explicitamente autorizados**. Não utilize contra sistemas, redes ou dados sem permissão formal do responsável; cumpra leis e políticas aplicáveis.
+- **Sem garantia** — Fornecido **“no estado em que se encontra” (AS IS)**. Não há garantias de qualquer tipo (expressas ou implícitas), incluindo comercialização, adequação a um fim específico ou não violação de direitos.
+- **Limitação de responsabilidade** — Na medida máxima permitida pela lei aplicável, o(s) autor(es) **não respondem** por danos diretos ou indiretos, perdas, uso indevido, reclamações de terceiros ou violação de termos de produtos de terceiros. **O uso é por sua conta e risco.**
+- **Atribuição e comunidade** — Preserve avisos de copyright e créditos ao projeto original (incluindo o [DetectionLab](https://github.com/clong/DetectionLab) e outros upstreams). Contribuições via **pull requests**, melhorias e **issues** são bem-vindas.
+- **Licença** — Consulte o ficheiro `LICENSE` na raiz do repositório para os termos completos (MIT).
+
 ## 📄 Licença
 
 Este projeto está licenciado sob a **Licença MIT** - veja o arquivo [LICENSE](LICENSE) para detalhes.
