@@ -7,6 +7,8 @@
 
 > **Um laboratório moderno de detecção de segurança cibernética para caça a ameaças, simulação de adversários e treinamento SOC**
 
+**English (en-US):** [README.md](README.md) · [CONTRIBUTING.md](CONTRIBUTING.md) · [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) · [Wiki](https://github.com/Uniao-Geek/SOC-Detection-Lab/wiki)
+
 ## 🎯 Visão Geral
 
 O **SOC Detection Laboratory** é um ambiente completo e moderno de laboratório de segurança cibernética projetado para:

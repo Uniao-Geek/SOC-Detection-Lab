@@ -7,6 +7,8 @@
 
 > **A modern cybersecurity detection laboratory for threat hunting, adversary simulation, and SOC training**
 
+**Portuguese (pt-BR):** [README.pt-BR.md](README.pt-BR.md) · [CONTRIBUTING.md](CONTRIBUTING.md) · [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+
 ## 🎯 Overview
 
 The **SOC Detection Laboratory** is a comprehensive, modern cybersecurity lab environment designed for:
