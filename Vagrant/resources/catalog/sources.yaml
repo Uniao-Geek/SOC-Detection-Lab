@@ -1,0 +1,99 @@
+schema_version: 1
+reviewed_at: "2026-09-12"
+policy:
+  immutable_refs_required: true
+  checksum_or_signature_required: true
+  auto_execute_third_party_content: false
+  allow_precompiled_binaries: false
+
+sources:
+  - id: wazuh
+    role: siem_xdr
+    url: https://github.com/wazuh/wazuh
+    version: 4.14.7
+    license: GPL-2.0
+    trust: official_release
+
+  - id: atomic-red-team
+    role: attack_simulation
+    url: https://github.com/redcanaryco/atomic-red-team
+    commit: 388942adbd9641f4dfdcf079d7efe9a75ec0ac43
+    license: MIT
+    trust: pinned_source
+
+  - id: invoke-atomicredteam
+    role: attack_orchestration
+    url: https://github.com/redcanaryco/invoke-atomicredteam
+    commit: 8af478bb9e4637df568ac1e596553b025b16cd1b
+    license: MIT
+    trust: pinned_source
+
+  - id: powershell-yaml
+    role: atomic_runtime_dependency
+    url: https://github.com/cloudbase/powershell-yaml
+    commit: 00679dffe0e7853fd63e68d3522269961652d895
+    license: Apache-2.0
+    trust: pinned_source
+
+  - id: palantir-windows-event-forwarding
+    role: windows_telemetry
+    url: https://github.com/palantir/windows-event-forwarding
+    commit: c2b76fc16488afada5573cadf30de6376be51c2c
+    license: Apache-2.0
+    trust: pinned_source_and_sha256
+
+  - id: sigma
+    role: detection_rules
+    url: https://github.com/SigmaHQ/sigma
+    commit: 5c9b21756f4e3ba137c1773ac9ba5a8332188961
+    license: DRL-1.1
+    trust: pinned_source
+
+  - id: sysmon-modular
+    role: endpoint_telemetry
+    url: https://github.com/olafhartong/sysmon-modular
+    commit: a5072591e173b7f7a9fe518ebd5c10e5313ef6f8
+    license: MIT
+    trust: pinned_source_and_sha256
+
+  - id: hayabusa
+    role: evtx_analysis
+    url: https://github.com/Yamato-Security/hayabusa
+    commit: ff883152b62f185a2bc2f710a0ad5a70f5fbfe63
+    license: AGPL-3.0
+    trust: external_optional_tool
+
+  - id: chainsaw
+    role: evtx_analysis
+    url: https://github.com/WithSecureLabs/chainsaw
+    commit: 82fabe2436876f951d37485ed2bfb42e7568bdb3
+    license: GPL-3.0
+    trust: external_optional_tool
+
+  - id: tcpreplay
+    role: pcap_replay
+    url: https://github.com/appneta/tcpreplay
+    commit: c3f6049a1de91e7d3b81543d0ecb01e465b05214
+    license: GPL-3.0
+    trust: distribution_package_only
+
+  - id: shuffle
+    role: soar
+    url: https://github.com/Shuffle/Shuffle
+    commit: 28d5cff23a56f8d11921c95d8e4048fd43278939
+    license: AGPL-3.0
+    trust: optional_isolated_profile
+
+  - id: socfortress-copilot
+    role: incident_management
+    url: https://github.com/socfortress/CoPilot
+    commit: 681794ead3591341cd3210d3eb4ed62d8770865c
+    license: AGPL-3.0
+    trust: reference_only
+
+  - id: talon
+    role: ai_analyst
+    url: https://github.com/taylorwalton/talon
+    commit: 6abcf8664cc6d640238af2232284bb3da6b3c21c
+    license: MIT
+    trust: optional_read_only_profile

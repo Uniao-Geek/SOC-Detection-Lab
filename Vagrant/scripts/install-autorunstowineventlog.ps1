@@ -1,16 +1,18 @@
-# Purpose: Installs AutorunsToWinEventLog from the Palantir WEF repo: (https://github.com/palantir/windows-event-forwarding/tree/master/AutorunsToWinEventLog)
-# TL;DR - Logs all entries from Autoruns to the Windows event log to be indexed by Splunk
+# Installs AutorunsToWinEventLog from the pinned Palantir WEF snapshot.
+# Logs Autoruns entries to Windows Event Log for collection by the Wazuh agent.
 Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Installing AutorunsToWinEventLog..."
 If ((Get-ScheduledTask -TaskName "AutorunsToWinEventLog" -ea silent) -eq $null)
 {
-    # Modify the installer to add an HTTP fallback until this gets fixed upstream in the windows-event-fowarding repo
-    # See https://github.com/clong/DetectionLab/issues/597
+    $trustedAutoruns = "C:\Tools\Sysinternals\Autoruns64.exe"
+    $signature = Get-AuthenticodeSignature -FilePath $trustedAutoruns
+    if ($signature.Status -ne "Valid" -or $signature.SignerCertificate.Subject -notlike "*Microsoft Corporation*") {
+        throw "Trusted Autoruns binary is missing or has an invalid signature."
+    }
+
+    # Reuse the verified local binary instead of downloading during upstream installation.
     (Get-Content c:\Users\vagrant\AppData\Local\Temp\windows-event-forwarding-master\AutorunsToWinEventLog\Install.ps1 -Raw) -replace 'Invoke-WebRequest -Uri "https://live.sysinternals.com/autorunsc64.exe" -OutFile "\$autorunsPath"', 'Try {
-    (New-Object System.Net.WebClient).DownloadFile(''https://live.sysinternals.com/Autoruns64.exe'', $autorunsPath)
-  } Catch {
-    Write-Host "HTTPS connection failed. Switching to HTTP :("
-    (New-Object System.Net.WebClient).DownloadFile(''http://live.sysinternals.com/Autoruns64.exe'', $autorunsPath)
-  }' | Set-Content -Path "c:\Users\vagrant\AppData\Local\Temp\windows-event-forwarding-master\AutorunsToWinEventLog\Install.ps1"
+    Copy-Item -LiteralPath ''C:\Tools\Sysinternals\Autoruns64.exe'' -Destination $autorunsPath -Force
+  } Catch { throw "Unable to stage verified Autoruns binary: $_" }' | Set-Content -Path "c:\Users\vagrant\AppData\Local\Temp\windows-event-forwarding-master\AutorunsToWinEventLog\Install.ps1"
     . c:\Users\vagrant\AppData\Local\Temp\windows-event-forwarding-master\AutorunsToWinEventLog\Install.ps1
     Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) AutorunsToWinEventLog installed. Starting the scheduled task. Future runs will begin at 11am"
     Start-ScheduledTask -TaskName "AutorunsToWinEventLog"

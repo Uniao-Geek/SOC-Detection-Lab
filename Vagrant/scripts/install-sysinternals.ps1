@@ -1,22 +1,21 @@
 # Purpose: Installs a handful of SysInternals tools on the host into c:\Tools\Sysinternals
 # Also installs Sysmon and Olaf Harton's Sysmon config
 
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+$commonScript = if (Test-Path "$PSScriptRoot\SocLab.Common.ps1") {
+  "$PSScriptRoot\SocLab.Common.ps1"
+} else {
+  "C:\vagrant\scripts\SocLab.Common.ps1"
+}
+. $commonScript
+$configuration = Get-SocLabConfiguration
+
 Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Installing SysInternals Tooling..."
 $sysinternalsDir = "C:\Tools\Sysinternals"
 $sysmonDir = "C:\ProgramData\Sysmon"
-If(!(test-path $sysinternalsDir)) {
-  New-Item -ItemType Directory -Force -Path $sysinternalsDir
-} Else {
-  Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Tools directory exists, no need to re-install. Exiting."
-  exit
-}
-
-If(!(test-path $sysmonDir)) {
-  New-Item -ItemType Directory -Force -Path $sysmonDir
-} Else {
-  Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Sysmon directory exists, no need to re-install. Exiting."
-  exit
-}
+New-Item -ItemType Directory -Force -Path $sysinternalsDir | Out-Null
+New-Item -ItemType Directory -Force -Path $sysmonDir | Out-Null
 
 $autorunsPath = "C:\Tools\Sysinternals\Autoruns64.exe"
 $procmonPath = "C:\Tools\Sysinternals\Procmon.exe"
@@ -36,8 +35,7 @@ Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Downloading Autoruns64.exe..."
 Try { 
   (New-Object System.Net.WebClient).DownloadFile('https://live.sysinternals.com/Autoruns64.exe', $autorunsPath) 
 } Catch { 
-  Write-Host "HTTPS connection failed. Switching to HTTP :("
-  (New-Object System.Net.WebClient).DownloadFile('http://live.sysinternals.com/Autoruns64.exe', $autorunsPath) 
+  throw "HTTPS download failed for Autoruns64.exe: $_"
 }
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutLocation + "Autoruns.lnk")
 $Shortcut.TargetPath = $autorunsPath
@@ -47,8 +45,7 @@ Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Downloading Procmon.exe..."
 Try { 
   (New-Object System.Net.WebClient).DownloadFile('https://live.sysinternals.com/Procmon.exe', $procmonPath)
 } Catch { 
-  Write-Host "HTTPS connection failed. Switching to HTTP :("
-  (New-Object System.Net.WebClient).DownloadFile('http://live.sysinternals.com/Procmon.exe', $procmonPath)
+  throw "HTTPS download failed for Procmon.exe: $_"
 }
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutLocation + "Process Monitor.lnk")
 $Shortcut.TargetPath = $procmonPath
@@ -58,16 +55,14 @@ Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Downloading PsExec64.exe..."
 Try { 
   (New-Object System.Net.WebClient).DownloadFile('https://live.sysinternals.com/PsExec64.exe', $psexecPath)
 } Catch { 
-  Write-Host "HTTPS connection failed. Switching to HTTP :("
-  (New-Object System.Net.WebClient).DownloadFile('http://live.sysinternals.com/PsExec64.exe', $psexecPath)
+  throw "HTTPS download failed for PsExec64.exe: $_"
 }
 
 Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Downloading procexp64.exe..."
 Try { 
   (New-Object System.Net.WebClient).DownloadFile('https://live.sysinternals.com/procexp64.exe', $procexpPath)
 } Catch { 
-  Write-Host "HTTPS connection failed. Switching to HTTP :("
-  (New-Object System.Net.WebClient).DownloadFile('http://live.sysinternals.com/procexp64.exe', $procexpPath)
+  throw "HTTPS download failed for procexp64.exe: $_"
 }
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutLocation + "Process Explorer.lnk")
 $Shortcut.TargetPath = $procexpPath
@@ -78,16 +73,14 @@ Try {
   (New-Object System.Net.WebClient).DownloadFile('https://live.sysinternals.com/sdelete64.exe', $sdeletePath)
 }
 Catch { 
-  Write-Host "HTTPS connection failed. Switching to HTTP :("
-  (New-Object System.Net.WebClient).DownloadFile('http://live.sysinternals.com/sdelete64.exe', $sdeletePath)
+  throw "HTTPS download failed for sdelete64.exe: $_"
 }
 
 Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Downloading Sysmon64.exe..."
 Try { 
   (New-Object System.Net.WebClient).DownloadFile('https://live.sysinternals.com/Sysmon64.exe', $sysmonPath)
 } Catch { 
-  Write-Host "HTTPS connection failed. Switching to HTTP :("
-  (New-Object System.Net.WebClient).DownloadFile('http://live.sysinternals.com/Sysmon64.exe', $sysmonPath)
+  throw "HTTPS download failed for Sysmon64.exe: $_"
 }
 Copy-Item $sysmonPath $sysmonDir
 
@@ -95,8 +88,7 @@ Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Downloading Tcpview.exe..."
 Try { 
   (New-Object System.Net.WebClient).DownloadFile('https://live.sysinternals.com/Tcpview.exe', $tcpviewPath)
 } Catch { 
-  Write-Host "HTTPS connection failed. Switching to HTTP :("
-  (New-Object System.Net.WebClient).DownloadFile('http://live.sysinternals.com/Tcpview.exe', $tcpviewPath)
+  throw "HTTPS download failed for Tcpview.exe: $_"
 }
 $Shortcut = $WScriptShell.CreateShortcut($ShortcutLocation + "Tcpview.lnk")
 $Shortcut.TargetPath = $tcpviewPath
@@ -109,11 +101,17 @@ if (Get-Process -ProcessName explorer -ErrorAction 'silentlycontinue') {
 
 # Download Olaf Hartongs Sysmon config
 Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Downloading Olaf Hartong's Sysmon config..."
-(New-Object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/olafhartong/sysmon-modular/master/sysmonconfig.xml', "$sysmonConfigPath")
-# Alternative: Download SwiftOnSecurity's Sysmon config
-# Write-Host "Downloading SwiftOnSecurity's Sysmon config..."
-# (New-Object System.Net.WebClient).DownloadFile('https://raw.githubusercontent.com/SwiftOnSecurity/sysmon-config/master/sysmonconfig-export.xml', "$sysmonConfigPath")
+$sysmonConfigUrl = "https://raw.githubusercontent.com/olafhartong/sysmon-modular/$($configuration.SYSMON_CONFIG_COMMIT)/sysmonconfig.xml"
+Invoke-VerifiedDownload -Uri $sysmonConfigUrl -Destination $sysmonConfigPath -Sha256 $configuration.SYSMON_CONFIG_SHA256
 
+$trustedTools = @($autorunsPath, $procmonPath, $psexecPath, $procexpPath, $sysmonPath, $sdeletePath, $tcpviewPath)
+foreach ($tool in $trustedTools) {
+  $signature = Get-AuthenticodeSignature -FilePath $tool
+  if ($signature.Status -ne [System.Management.Automation.SignatureStatus]::Valid -or
+      $signature.SignerCertificate.Subject -notlike "*Microsoft Corporation*") {
+    throw "Invalid Microsoft signature on $tool."
+  }
+}
 # Start Sysmon
 Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Starting Sysmon..."
 Start-Process -FilePath "$sysmonDir\Sysmon64.exe" -ArgumentList "-accepteula -i $sysmonConfigPath"

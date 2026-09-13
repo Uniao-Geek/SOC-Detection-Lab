@@ -1,0 +1,20 @@
+[Unit]
+Description=SOC Detection Lab approval-gated SOAR bridge
+After=wazuh-manager.service
+Requires=wazuh-manager.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/lib/soc-detection-lab/soar-bridge.py
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadOnlyPaths=/var/ossec/logs/alerts
+ReadWritePaths=/var/lib/soc-detection-lab/soar
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "id": "network-c2",
+  "title": "Synthetic HTTP beacon PCAP",
+  "attack_technique": "T1071.001",
+  "generator": "Vagrant/scripts/generate-training-pcap.py",
+  "suricata_sid": 9000001,
+  "expected_signature": "SOC-LAB C2 Beacon",
+  "processing": ["Suricata offline", "Zeek offline", "Wazuh JSON ingestion"],
+  "live_replay_default": false
+}

@@ -1,63 +1,62 @@
+requested_provider = ENV.fetch("VAGRANT_DEFAULT_PROVIDER", "virtualbox").downcase
+unless requested_provider == "virtualbox"
+  raise "Only the VirtualBox provider is supported."
+end
+ENV["VAGRANT_DEFAULT_PROVIDER"] = "virtualbox"
+
+configuration_path = File.expand_path("../../soc-detection-lab.conf", __dir__)
+configuration = {}
+File.foreach(configuration_path) do |line|
+  match = line.match(/\A([A-Z][A-Z0-9_]*)="([^"\r\n]*)"\s*\z/)
+  configuration[match[1]] = match[2] if match
+end
+server_box_path = File.expand_path("../../Boxes/windows_2016_virtualbox.box", __dir__)
+server_box_name = File.file?(server_box_path) ? "soc-lab/windows2016" : configuration.fetch("VAGRANT_BOX_WINDOWS")
+
 Vagrant.configure("2") do |config|
+  show_gui = ENV.fetch("SOC_GUI", "false").casecmp("true").zero?
+  config.vm.box_check_update = false
+
   config.vm.define "exchange" do |cfg|
-    cfg.vm.box = "detectionlab/win2016"
+    cfg.vm.box = server_box_name
+    cfg.vm.box_url = server_box_path if File.file?(server_box_path)
     cfg.vm.hostname = "exchange"
-    cfg.vm.boot_timeout = 600
+    cfg.vm.boot_timeout = 1200
     cfg.vm.communicator = "winrm"
     cfg.winrm.basic_auth_only = true
-    cfg.winrm.timeout = 300
+    cfg.winrm.timeout = 900
     cfg.winrm.retry_limit = 20
-    cfg.vm.network :private_network, ip: "192.168.56.106", gateway: "192.168.56.1", dns: "192.168.56.102"
+    cfg.vm.network :private_network,
+                   ip: "192.168.56.106",
+                   gateway: "192.168.56.1",
+                   dns: "192.168.56.102"
+    cfg.vm.synced_folder ".", "/vagrant", disabled: true
+    cfg.vm.synced_folder "../", "/vagrant", type: "virtualbox"
 
-    cfg.vm.provision "shell", path: "scripts/fix-second-network.ps1", privileged: true, args: "-ip 192.168.56.106 -dns 8.8.8.8 -gateway 192.168.56.1" 
-    cfg.vm.provision "shell", path: "scripts/provision.ps1", privileged: false
+    cfg.vm.provision "file",
+                     source: "../../soc-detection-lab.conf",
+                     destination: "C:/soc-detection-lab.conf"
+    cfg.vm.provision "shell", path: "../scripts/provision.ps1", privileged: false
     cfg.vm.provision "reload"
-    cfg.vm.provision "shell", path: "scripts/provision.ps1", privileged: false
-    cfg.vm.provision "shell", path: "scripts/download_palantir_wef.ps1", privileged: false
-    cfg.vm.provision "shell", inline: 'wevtutil el | Select-String -notmatch "Microsoft-Windows-LiveId" | Foreach-Object {wevtutil cl "$_"}', privileged: false
-    cfg.vm.provision "shell", path: "scripts/install-splunkuf.ps1", privileged: false
-    cfg.vm.provision "shell", path: "scripts/install-windows_ta.ps1", privileged: false
-    cfg.vm.provision "shell", path: "scripts/install-utilities.ps1", privileged: false
-    cfg.vm.provision "shell", path: "scripts/install-redteam.ps1", privileged: false
-    cfg.vm.provision "shell", path: "scripts/install-choco-extras.ps1", privileged: false
-    cfg.vm.provision "shell", path: "scripts/install-osquery.ps1", privileged: false
-    cfg.vm.provision "shell", path: "scripts/install-sysinternals.ps1", privileged: false
-    cfg.vm.provision "shell", path: "scripts/install-velociraptor.ps1", privileged: false 
-    cfg.vm.provision "shell", path: "scripts/install-exchange-prerequisites.ps1", privileged: true
+    cfg.vm.provision "shell", path: "../scripts/provision.ps1", privileged: false
+    cfg.vm.provision "shell", path: "../scripts/install-utilities.ps1", privileged: false
+    cfg.vm.provision "shell", path: "../scripts/install-osquery.ps1", privileged: true
+    cfg.vm.provision "shell", path: "../scripts/install-sysinternals.ps1", privileged: false
+    cfg.vm.provision "shell", path: "../scripts/install-velociraptor.ps1", privileged: false
+    cfg.vm.provision "shell", path: "../scripts/install-wazuh-agent.ps1", privileged: true
+    cfg.vm.provision "shell", path: "../scripts/install-exchange-prerequisites.ps1", privileged: true
     cfg.vm.provision "reload"
-    cfg.vm.provision "shell", path: "scripts/install-exchange.ps1", privileged: true 
-    cfg.vm.provision "shell", inline: "Set-SmbServerConfiguration -AuditSmb1Access $true -Force", privileged: false
-    cfg.vm.provision "shell", inline: 'cscript c:\windows\system32\slmgr.vbs /dlv', privileged: false
+    cfg.vm.provision "shell", path: "../scripts/install-exchange.ps1", privileged: true
+    cfg.vm.provision "shell", path: "../scripts/install-wazuh-agent.ps1", privileged: true
 
-    cfg.vm.provider "vmware_desktop" do |v, override|
-      v.vmx["displayname"] = "exchange.windomain.local"
-      v.memory = 8192
-      v.cpus = 4
-      v.gui = true
-      v.enable_vmrun_ip_lookup = false
-    end
-
-    cfg.vm.provider "virtualbox" do |vb, override|
-      vb.gui = true
-      vb.name = "exchange.windomain.local"
-      vb.default_nic_type = "82545EM"
-      vb.customize ["modifyvm", :id, "--memory", 8192]
-      vb.customize ["modifyvm", :id, "--cpus", 4]
+    cfg.vm.provider "virtualbox" do |vb|
+      vb.gui = show_gui
+      vb.name = "soc-lab-exchange"
+      vb.memory = 8192
+      vb.cpus = 4
       vb.customize ["modifyvm", :id, "--vram", "32"]
-      vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
+      vb.customize ["modifyvm", :id, "--clipboard-mode", "bidirectional"]
       vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-      vb.customize ["setextradata", "global", "GUI/SuppressMessages", "all" ]
-    end
-
-    cfg.vm.provider "libvirt" do |lv, override|
-      lv.graphics_type = "spice"
-      lv.video_type = "qxl"
-      lv.input :type => "tablet", :bus => "usb"
-      override.vm.box = "../Boxes/windows_2016_libvirt.box"
-      lv.video_vram = 32768
-      lv.memory = 8192
-      lv.cpus = 4
-      override.vm.synced_folder '.', '/', type: 'winrm' 
     end
   end
 end

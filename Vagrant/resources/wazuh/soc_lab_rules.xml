@@ -1,0 +1,23 @@
+<group name="soc_lab,training,">
+  <rule id="110000" level="3">
+    <decoded_as>json</decoded_as>
+    <field name="soc_lab.event_type">telemetry</field>
+    <description>SOC Lab telemetry replay: $(soc_lab.scenario_id)</description>
+    <options>no_full_log</options>
+  </rule>
+
+  <rule id="110001" level="10">
+    <if_sid>110000</if_sid>
+    <field name="soc_lab.expected_alert">true</field>
+    <description>SOC Lab expected detection: $(soc_lab.title)</description>
+    <group>purple_team,detection_validation,</group>
+  </rule>
+
+  <rule id="110010" level="12">
+    <decoded_as>json</decoded_as>
+    <field name="event_type">alert</field>
+    <field name="alert.signature">SOC-LAB</field>
+    <description>SOC Lab Suricata scenario alert: $(alert.signature)</description>
+    <group>network_ids,detection_validation,</group>
+  </rule>
+</group>

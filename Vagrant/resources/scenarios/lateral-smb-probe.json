@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "lateral-smb-probe",
+  "title": "Host-only SMB reachability probe",
+  "kind": "builtin",
+  "attack_technique": "T1021.002",
+  "risk": "low",
+  "timeout_seconds": 30,
+  "telemetry": ["Windows Filtering Platform", "Sysmon network connection", "Suricata"],
+  "expected_alert": "SMB connection attempt inside the lab",
+  "cleanup": "No persistent change"
+}

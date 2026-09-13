@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "response-containment",
+  "title": "Reversible process containment",
+  "kind": "builtin",
+  "attack_technique": "T1489",
+  "risk": "low",
+  "timeout_seconds": 45,
+  "telemetry": ["Sysmon process creation", "Sysmon process termination", "Wazuh active response"],
+  "expected_alert": "Training process contained",
+  "cleanup": "Stop only the uniquely tagged training process"
+}

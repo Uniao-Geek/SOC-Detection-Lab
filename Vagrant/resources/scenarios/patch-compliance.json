@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "patch-compliance",
+  "title": "Windows KEV patch inventory",
+  "kind": "builtin",
+  "attack_technique": "T1082",
+  "risk": "low",
+  "timeout_seconds": 60,
+  "telemetry": ["osquery patches", "Windows hotfix inventory", "Wazuh inventory"],
+  "expected_alert": "Patch inventory event for CVE triage",
+  "cleanup": "No persistent change"
+}

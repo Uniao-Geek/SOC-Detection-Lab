@@ -7,7 +7,12 @@ if (!(Test-Path 'c:\Program Files\sysinternals')) {
 if (!(Test-Path 'c:\Program Files\sysinternals\bginfo.exe')) {
   # SysInternals requires TLS 1.2
   [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-  (New-Object Net.WebClient).DownloadFile('http://live.sysinternals.com/bginfo.exe', 'c:\Program Files\sysinternals\bginfo.exe')
+  (New-Object Net.WebClient).DownloadFile('https://live.sysinternals.com/bginfo.exe', 'c:\Program Files\sysinternals\bginfo.exe')
+  $signature = Get-AuthenticodeSignature 'c:\Program Files\sysinternals\bginfo.exe'
+  if ($signature.Status -ne 'Valid' -or $signature.SignerCertificate.Subject -notlike '*Microsoft Corporation*') {
+    Remove-Item 'c:\Program Files\sysinternals\bginfo.exe' -Force
+    throw 'BGInfo signature validation failed.'
+  }
 }
 
 Copy-Item "c:\vagrant\resources\windows\background.bmp" 'c:\Program Files\sysinternals\background.bmp'

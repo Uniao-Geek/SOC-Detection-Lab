@@ -50,8 +50,7 @@ if ((gwmi win32_computersystem).partofdomain -eq $false) {
   $adapters = Get-WmiObject Win32_NetworkAdapterConfiguration | Where-Object { $_.IPAddress -And ($_.IPAddress).StartsWith($subnet) }
   if ($adapters) {
     Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Setting DNS"
-    # Don't do this in Azure. If the network adatper description contains "Hyper-V", this won't apply changes.
-    $adapters | ForEach-Object {if (!($_.Description).Contains("Hyper-V")) {$_.SetDNSServerSearchOrder($newDNSServers)}}
+    $adapters | ForEach-Object { $_.SetDNSServerSearchOrder($newDNSServers) }
   }
   Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Setting timezone to UTC"
   c:\windows\system32\tzutil.exe /s "UTC"

@@ -18,15 +18,26 @@ powercfg -change -hibernate-timeout-ac 0
 
 # Download and install ShutUp10
 Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Downloading ShutUp10..."
-[Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 # Disabling the progress bar speeds up IWR https://github.com/PowerShell/PowerShell/issues/2138
 $ProgressPreference = 'SilentlyContinue'
 $shutUp10DownloadUrl = "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe"
-$shutUp10RepoPath = "C:\Users\vagrant\AppData\Local\Temp\OOSU10.exe"
+$shutUp10RepoPath = "C:\ProgramData\SocDetectionLab\cache\OOSU10.exe"
 if (-not (Test-Path $shutUp10RepoPath)) {
   Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Installing ShutUp10 and disabling Windows Defender"
+  New-Item -ItemType Directory -Path (Split-Path -Parent $shutUp10RepoPath) -Force | Out-Null
   Invoke-WebRequest -Uri "$shutUp10DownloadUrl" -OutFile $shutUp10RepoPath
-  . $shutUp10RepoPath c:\vagrant\resources\windows\shutup10.cfg /quiet /force
+  $signature = Get-AuthenticodeSignature -FilePath $shutUp10RepoPath
+  if ($signature.Status -ne "Valid" -or $signature.SignerCertificate.Subject -notlike "*O&O*") {
+    Remove-Item -LiteralPath $shutUp10RepoPath -Force
+    throw "ShutUp10 signature validation failed."
+  }
+  $process = Start-Process -FilePath $shutUp10RepoPath -ArgumentList @(
+    "c:\vagrant\resources\windows\shutup10.cfg", "/quiet", "/force"
+  ) -Wait -PassThru
+  if ($process.ExitCode -ne 0) {
+    throw "ShutUp10 failed with exit code $($process.ExitCode)."
+  }
 } else {
   Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) ShutUp10 was already installed. Moving On."
 }

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "name": "SOC Lab Wazuh alert approval",
+  "target": "Shuffle",
+  "source_commit": "28d5cff23a56f8d11921c95d8e4048fd43278939",
+  "auto_import": false,
+  "reason": "Shuffle app identifiers are installation-specific and must be selected in its UI.",
+  "trigger": {
+    "type": "authenticated_webhook",
+    "accepted_rule_ids": ["110001", "110010"],
+    "maximum_body_bytes": 262144
+  },
+  "steps": [
+    {
+      "id": "validate",
+      "action": "Reject unexpected fields and non-training Wazuh rule IDs"
+    },
+    {
+      "id": "enrich",
+      "action": "Read local Wazuh agent and rule context without external secrets"
+    },
+    {
+      "id": "create_incident",
+      "action": "Create a training incident with ATT&CK and telemetry evidence"
+    },
+    {
+      "id": "approve",
+      "action": "Use Shuffle User Input to require explicit analyst approval"
+    },
+    {
+      "id": "respond",
+      "action": "Call the local allowlisted response endpoint only after approval"
+    },
+    {
+      "id": "audit",
+      "action": "Record requester, approver, action, result and rollback time"
+    }
+  ],
+  "forbidden": [
+    "Automatic containment without approval",
+    "Public unauthenticated webhook",
+    "Secrets embedded in workflow JSON",
+    "Commands derived from alert fields"
+  ]
+}

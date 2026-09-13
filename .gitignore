@@ -15,38 +15,11 @@ vagrant-*.log
 *.vmx
 *.vmxf
 
-# VMware
-*.vmx
-*.vmxf
-*.vmdk
-*.hlog
-*.log
-*.nvram
-*.vmsd
-*.vmsn
-*.vmss
-*.vmtx
-*.vmtm
-
 # Packer
 packer_cache/
 *.box
 *.ova
 *.ovf
-
-# Terraform
-*.tfstate
-*.tfstate.*
-*.tfvars
-.terraform/
-.terraform.lock.hcl
-terraform.tfvars
-*.tfplan
-
-# Ansible
-*.retry
-.ansible/
-ansible.cfg.local
 
 # Logs
 *.log
@@ -89,6 +62,8 @@ secrets/
 .env.local
 .env.production
 *.env*
+Vagrant/.secrets/
+.tmp/
 
 # Build artifacts
 build/

@@ -1,291 +1,174 @@
 # SOC Detection Laboratory
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Maintenance](https://img.shields.io/badge/maintained%3F-yes-green.svg)](https://github.com/Uniao-Geek/SOC-Detection-Lab/graphs/commit-activity)
-[![GitHub last commit](https://img.shields.io/github/last-commit/Uniao-Geek/SOC-Detection-Lab.svg)](https://github.com/Uniao-Geek/SOC-Detection-Lab/commits/main)
-[![GitHub issues](https://img.shields.io/github/issues/Uniao-Geek/SOC-Detection-Lab.svg)](https://github.com/Uniao-Geek/SOC-Detection-Lab/issues)
+Laboratório didático para demonstrar o ciclo básico de um SOC: gerar atividade,
+coletar telemetria, detectar, alertar, investigar, responder, conter e validar a
+recuperação.
 
-> **Um laboratório moderno de detecção de segurança cibernética para caça a ameaças, simulação de adversários e treinamento SOC**
+Autor: André Henrique (@mrhenrike) | União Geek | https://uniaogeek.com.br/
 
-**English (en-US):** [README.md](README.md) · [CONTRIBUTING.md](CONTRIBUTING.md) · [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) · [Wiki](https://github.com/Uniao-Geek/SOC-Detection-Lab/wiki)
+## Arquitetura
 
-## 🎯 Visão Geral
+O perfil padrão usa:
 
-O **SOC Detection Laboratory** é um ambiente completo e moderno de laboratório de segurança cibernética projetado para:
+- Wazuh como SIEM/XDR e inventário de endpoints
+- Sysmon, osquery e agente Wazuh no Windows
+- Suricata e Zeek para visibilidade de rede
+- Velociraptor para DFIR
+- Atomic Red Team com allowlist para validação de detecções
+- replay offline de PCAP, EVTX, JSON e logs de texto
+- bridge SOAR local com aprovação humana
+- analista IA opcional e somente leitura
 
-- **🔍 Detecção de Ameaças** - Análise avançada de logs e monitoramento de eventos de segurança
-- **🎯 Threat Hunting** - Investigação proativa de ameaças cibernéticas
-- **⚔️ Simulação de Adversários** - Simulação de ataques para teste de detecção
-- **🎓 Treinamento SOC** - Treinamento de analistas de Security Operations Center
-- **🔴 Exercícios Red Team** - Exercícios de equipe vermelha e purple team
+O único caminho de execução suportado é Vagrant com VirtualBox.
 
-## 🏢 Organização
+## Perfis
 
-**Uniao-Geek** - Pesquisa e Desenvolvimento em Segurança Cibernética
+- `wazuh-core`: logger e Win10, recomendado para hosts com 16 GB
+- `wazuh-ad`: adiciona DC e WEF, recomendado para hosts com mais memória
+- `soar-ai`: adiciona bridge SOAR e adaptador de analista IA ao `wazuh-core`
 
-### 👥 Contribuidores
+O runner impede o início quando a RAM ou o disco livres são insuficientes. Ele
+não encerra processos do host.
 
-- **mrhenrike** - Desenvolvedor Líder e Pesquisador de Segurança
-- **bhbrandon** - Contribuidor
+## Início rápido no Windows
 
-## 🏗️ Arquitetura do Laboratório
+Pré-requisitos:
 
-### 🖥️ Máquinas Virtuais
+- Windows 10/11
+- VirtualBox 7.2+
+- Vagrant 2.3+
+- PowerShell 5.1+
+- 70 GB livres
+- pelo menos 10 GB de RAM livre para `wazuh-core`
 
-| VM | Sistema Operacional | Endereço IP | Função Principal |
-|---|---|---|---|
-| **logger** | Ubuntu 22.04 LTS | 192.168.56.105 | SIEM, Logging Centralizado, Análise |
-| **dc** | Windows Server 2016 | 192.168.56.102 | Domain Controller, Active Directory |
-| **wef** | Windows Server 2016 | 192.168.56.103 | Windows Event Forwarder |
-| **win10** | Windows 10 | 192.168.56.104 | Workstation de Teste |
-
-### 🛠️ Ferramentas Instaladas
-
-#### Logger VM (Ubuntu 22.04) - Centro de Análise
-- **🔍 Splunk Enterprise** - SIEM principal e análise de logs
-- **🌐 Zeek (Bro)** - Análise avançada de tráfego de rede
-- **🛡️ Suricata** - Sistema de detecção de intrusão (IDS/IPS)
-- **📊 Fleet (osquery)** - Monitoramento de endpoints
-- **🔬 Velociraptor** - Forensics digitais e resposta a incidentes
-- **🖥️ Apache Guacamole** - Gateway de desktop remoto
-- **🔗 OpenVSwitch** - Virtual switching avançado
-
-#### Windows VMs - Ambiente de Produção
-- **📝 Windows Event Logging** - Logs de sistema e aplicações
-- **👁️ Sysmon** - Monitoramento avançado de processos
-- **📡 osquery** - Telemetria de endpoints
-- **🔬 Velociraptor Client** - Cliente de forensics
-- **⚔️ Red Team Tools** - Ferramentas de teste e simulação
-
-## 🚀 Início Rápido
-
-### 📋 Pré-requisitos
-
-- **VirtualBox 7.2.0+** (recomendado) ou VMware Workstation
-- **Vagrant 2.3+**
-- **8GB+ RAM** (16GB recomendado)
-- **50GB+ espaço em disco**
-- **Windows 10/11** ou **Linux** como sistema host
-
-### ⚡ Instalação Rápida
-
-1. **Clone o repositório:**
-   ```bash
-   git clone https://github.com/Uniao-Geek/SOC-Detection-Lab.git
-   cd SOC-Detection-Lab/Vagrant
-   ```
-
-2. **Execute o script de rebuild limpo:**
-   ```bash
-   chmod +x rebuild-logger.sh
-   ./rebuild-logger.sh
-   ```
-
-3. **Aguarde a instalação completa** (30-60 minutos)
-
-4. **Acesse o Splunk:**
-   - **URL:** https://192.168.56.105:8000
-   - **Usuário:** admin
-   - **Senha:** changeme
-
-### ⚙️ Configurações Automáticas
-
-O sistema é configurado automaticamente com:
-
-- ✅ **GRUB timeout**: 5 segundos (boot rápido)
-- ✅ **Hostname**: logger
-- ✅ **IP estático**: 192.168.56.105
-- ✅ **DNS**: 8.8.8.8, 8.8.4.4, 192.168.56.102
-- ✅ **Timezone**: UTC
-- ✅ **Network**: Configuração otimizada para lab
-
-## 🔧 Scripts e Ferramentas
-
-### 📜 Scripts de Configuração
-
-- `scripts/initial-system-config.sh` - Configuração inicial do sistema
-- `scripts/configure-grub.sh` - Configuração do GRUB bootloader
-- `rebuild-logger.sh` - Rebuild limpo da VM logger
-
-### 🚀 Scripts de Bootstrap
-
-- `logger_bootstrap_enhanced.sh` - Instalação completa da VM logger
-
-**Modos disponíveis:**
-- `main` - Instalação completa (padrão)
-- `splunk_only` - Apenas Splunk Enterprise
-- `zeek_only` - Apenas Zeek Network Monitor
-- `suricata_only` - Apenas Suricata IDS
-- `fleet_only` - Apenas Fleet osquery
-- `guacamole_only` - Apenas Apache Guacamole
-- `velociraptor_only` - Apenas Velociraptor
-- `fix_network_only` - Apenas correção de rede
-
-## 🌐 Acessos e URLs
-
-### 🔗 URLs Principais
-
-| Serviço | URL | Credenciais |
-|---|---|---|
-| **Splunk Web** | https://192.168.56.105:8000 | admin/changeme |
-| **Splunk Management API** | https://192.168.56.105:8089 | admin/changeme |
-| **Fleet osquery** | https://192.168.56.105:8412 | admin@detectionlab.network/Fl33tpassword! |
-| **Apache Guacamole** | http://192.168.56.105:8080/guacamole | vagrant/vagrant |
-
-### 🔌 Portas Forwarded
-
-| Porta Host | Porta Guest | Serviço |
-|---|---|---|
-| 5625 | 22 | SSH Logger |
-| 8000 | 8000 | Splunk Web UI |
-| 8089 | 8089 | Splunk Management API |
-
-## 📊 Monitoramento e Logs
-
-### 📝 Logs Importantes
-
-- `/var/log/logger_provision_report.log` - Relatório completo de provisionamento
-- `/var/log/soc-detection-lab-initial-config.log` - Configuração inicial do sistema
-- `/opt/splunk/var/log/splunk/` - Logs do Splunk Enterprise
-- `/opt/zeek/logs/` - Logs do Zeek Network Monitor
-- `/var/log/suricata/` - Logs do Suricata IDS
-
-### 💻 Comandos Úteis
-
-```bash
-# Status dos serviços principais
-systemctl status splunkd zeek suricata fleet
-
-# Verificar conectividade entre VMs
-ping -c 1 192.168.56.102  # DC
-ping -c 1 192.168.56.103  # WEF
-ping -c 1 192.168.56.104  # Win10
-
-# Verificar configurações do sistema
-hostname
-ip addr show eth1
-grep GRUB_TIMEOUT /etc/default/grub
-
-# Monitorar logs em tempo real
-tail -f /var/log/logger_provision_report.log
-journalctl -f
+```powershell
+.\lab.ps1 doctor -Profile wazuh-core
+.\lab.ps1 up -Profile wazuh-core
+.\lab.ps1 status -Profile wazuh-core
+.\lab.ps1 validate -Profile wazuh-core
 ```
 
-## 🛠️ Troubleshooting
+Acesse o dashboard Wazuh em `https://127.0.0.1:8443`. As credenciais são geradas
+durante o provisionamento e ficam somente na VM logger, sob
+`/var/lib/soc-detection-lab/secrets/`, com acesso restrito.
 
-### ❗ Problemas Comuns
+Para encerrar:
 
-1. **VM não inicia:**
-   - Verificar se VirtualBox está funcionando corretamente
-   - Executar `vagrant destroy -f` e `vagrant up` novamente
-   - Verificar logs do VirtualBox
-
-2. **Problemas de rede:**
-   - Verificar se o IP 192.168.56.105 está livre na rede
-   - Executar `./rebuild-logger.sh` para rebuild limpo
-   - Verificar configurações de firewall
-
-3. **Splunk não acessível:**
-   - Aguardar 5-10 minutos após o boot completo
-   - Verificar logs: `journalctl -u splunkd`
-   - Verificar se o serviço está rodando: `systemctl status splunkd`
-
-4. **Timeout no GRUB:**
-   - Executar `scripts/configure-grub.sh` manualmente
-   - Verificar configuração: `cat /etc/default/grub`
-
-### 🔍 Logs de Debug
-
-```bash
-# Logs do Vagrant em tempo real
-vagrant ssh logger -c "tail -f /var/log/logger_provision_report.log"
-
-# Logs do sistema
-journalctl -f
-
-# Status de todos os serviços
-systemctl list-units --failed
-
-# Verificar espaço em disco
-df -h
-
-# Verificar uso de memória
-free -h
+```powershell
+.\lab.ps1 down -Profile wazuh-core
 ```
 
-## 🚀 Plataformas de Deployment
+`reset` destrói as VMs do perfil e sempre solicita confirmação, salvo uso
+explícito de `-Force`.
 
-### Desenvolvimento Local
-- **Vagrant** com VirtualBox/VMware
-- **Setup rápido** para testes e desenvolvimento
+## Cenários de ataque e detecção
 
-### Plataformas Cloud
-- **AWS** - Deploy com Terraform
-- **Azure** - Terraform + Ansible
-- **ESXi** - Terraform + Ansible
-- **Proxmox** - Terraform + Ansible
+Os cenários são manifestos versionados em
+`Vagrant/resources/scenarios/`. O runner só aceita IDs existentes e o executor
+mantém uma segunda allowlist interna.
 
-### Enterprise
-- **HyperV** - Ambientes Windows Server
-- **Custom** - Templates Packer para builds customizados
+```powershell
+.\lab.ps1 scenario -Profile wazuh-core -ScenarioId powershell-obfuscated
+.\lab.ps1 scenario -Profile wazuh-core -ScenarioId registry-run-key
+.\lab.ps1 scenario -Profile wazuh-core -ScenarioId credential-enumeration
+.\lab.ps1 scenario -Profile wazuh-ad -ScenarioId lateral-smb-probe
+.\lab.ps1 scenario -Profile wazuh-core -ScenarioId patch-compliance
+.\lab.ps1 scenario -Profile soar-ai -ScenarioId response-containment
+```
 
-## 🤝 Contribuição
+Cada manifesto informa técnica ATT&CK, risco, timeout, telemetria esperada,
+alerta esperado e cleanup. O instalador do Atomic Red Team baixa commits fixos,
+não executa testes durante o provisionamento e não instala Mimikatz,
+PowerSploit, PurpleSharp ou BadBlood por padrão.
 
-Contribuições são bem-vindas! Por favor, siga estes passos:
+## Replay de PCAP
 
-1. **Fork** o projeto
-2. **Crie** uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. **Commit** suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** para a branch (`git push origin feature/AmazingFeature`)
-5. **Abra** um Pull Request
+Gere o PCAP sintético e não roteável:
 
-### 📋 Guidelines de Contribuição
+```powershell
+python .\Vagrant\scripts\generate-training-pcap.py .\.tmp\training.pcap
+.\lab.ps1 replay -Profile wazuh-core -ReplayType pcap -Path .\.tmp\training.pcap
+```
 
-- Use commits descritivos
-- Teste suas mudanças antes de submeter
-- Mantenha a documentação atualizada
-- Siga as convenções de código existentes
+O replay padrão é offline. Suricata e Zeek processam a captura e enviam JSON ao
+Wazuh. O tráfego contém o marcador `SOC-LAB-C2-Beacon`, detectado pelo SID
+Suricata `9000001`.
 
----
+Replay ao vivo é bloqueado por padrão. Quando habilitado manualmente dentro da
+VM, ele usa somente `eth1`, limita a taxa e recusa execução se essa interface
+tiver rota para a Internet.
 
-<!-- LEGAL-NOTICE-UG-MRH -->
+## Replay de EVTX e logs
 
-## Aviso legal / legal notice
+```powershell
+.\lab.ps1 replay -Profile wazuh-core -ReplayType evtx -Path .\dados\amostra.evtx
+.\lab.ps1 replay -Profile wazuh-core -ReplayType log -Path .\dados\eventos.jsonl
+```
 
-- **Uso** — Conteúdo para educação, pesquisa e testes **explicitamente autorizados**. Não utilize contra sistemas, redes ou dados sem permissão formal do responsável; cumpra leis e políticas aplicáveis.
-- **Sem garantia** — Fornecido **“no estado em que se encontra” (AS IS)**. Não há garantias de qualquer tipo (expressas ou implícitas), incluindo comercialização, adequação a um fim específico ou não violação de direitos.
-- **Limitação de responsabilidade** — Na medida máxima permitida pela lei aplicável, o(s) autor(es) **não respondem** por danos diretos ou indiretos, perdas, uso indevido, reclamações de terceiros ou violação de termos de produtos de terceiros. **O uso é por sua conta e risco.**
-- **Atribuição e comunidade** — Preserve avisos de copyright e créditos ao projeto original (incluindo o [DetectionLab](https://github.com/clong/DetectionLab) e outros upstreams). Contribuições via **pull requests**, melhorias e **issues** são bem-vindas.
-- **Licença** — Consulte o ficheiro `LICENSE` na raiz do repositório para os termos completos (MIT).
+Entradas são validadas por extensão, tamanho, localização e formato. EVTX
+preserva o timestamp original em um campo separado e limita a importação a
+5.000 eventos. Hayabusa pode ser usado opcionalmente quando o binário e seu
+SHA-256 sidecar forem fornecidos pelo operador.
 
-## 📄 Licença
+## SOAR e resposta
 
-Este projeto está licenciado sob a **Licença MIT** - veja o arquivo [LICENSE](LICENSE) para detalhes.
+No perfil `soar-ai`, alertas didáticos Wazuh viram incidentes em:
 
-## 🙏 Agradecimentos
+```text
+/var/lib/soc-detection-lab/soar/incidents/
+/var/lib/soc-detection-lab/soar/pending/
+```
 
-Este projeto é baseado no original [DetectionLab](https://github.com/clong/DetectionLab) por Chris Long, com significativas melhorias e modificações para operações SOC modernas.
+Nenhuma contenção é automática. Para aprovar uma ação proposta:
 
-### 🏆 Agradecimentos Especiais
+```bash
+sudo soc-lab-approve-response INCIDENT_ID
+```
 
-- **Chris Long** - Criador original do DetectionLab
-- **Palantir** - Configurações de Windows Event Forwarding
-- **Splunk** - Plataforma SIEM enterprise
-- **osquery** - Visibilidade cross-platform de endpoints
-- **Suricata** - Sistema de detecção de intrusão
-- **Zeek** - Framework de análise de rede
-- **Velociraptor** - Plataforma de forensics digitais
+O único bloqueio de rede permitido aceita endereços da rede host-only
+`192.168.56.0/24`, protege gateway e logger e agenda rollback em cinco minutos.
+O blueprint de Shuffle está em
+`Vagrant/resources/soar/shuffle-wazuh-training.blueprint.json` e deve ser
+configurado na interface do Shuffle, pois IDs de apps variam por instalação.
 
-## 📞 Suporte e Contato
+## Analista IA
 
-Para suporte e dúvidas:
+O adaptador gera relatório, nunca executa ações. Sem modelo configurado, produz
+um resumo determinístico. Para usar Ollama na própria VM:
 
-- **🐛 Issues**: [GitHub Issues](https://github.com/Uniao-Geek/SOC-Detection-Lab/issues)
-- **💬 Discussions**: [GitHub Discussions](https://github.com/Uniao-Geek/SOC-Detection-Lab/discussions)
-- **📚 Wiki**: [Documentação Completa](https://github.com/Uniao-Geek/SOC-Detection-Lab/wiki)
+```bash
+export SOC_LLM_ENDPOINT=http://127.0.0.1:11434/api/generate
+export SOC_LLM_MODEL=qwen3:0.6b
+soc-lab-ai-analyst INCIDENT_ID
+```
 
----
+HTTP é aceito somente em loopback. Endpoints HTTPS externos precisam estar em
+`SOC_LLM_ALLOWED_HOSTS`. Redirecionamentos, credenciais na URL e respostas
+maiores que 1 MB são recusados.
 
-**SOC Detection Laboratory** - Construindo o futuro da detecção de ameaças cibernéticas 🛡️
+## Proveniência e CVEs
 
-*Desenvolvido com ❤️ pela Uniao-Geek*
+- fontes, commits, licenças e política: `Vagrant/resources/catalog/sources.yaml`
+- CVEs e advisories priorizados: `Vagrant/resources/catalog/cves.yaml`
+- versões e hashes: `soc-detection-lab.conf`
+
+O catálogo cobre Windows KEV de 2026, Velociraptor 0.77.2, Suricata 8.0.6 e osquery 5.23.1. PoCs públicos não são
+executados nem incorporados automaticamente.
+
+## Segurança
+
+- use somente em rede isolada e sistemas autorizados
+- não reutilize credenciais ou certificados do laboratório
+- snapshots devem preceder cenários de risco médio
+- conteúdo externo precisa de commit, versão e hash ou assinatura
+- ações ofensivas e contenções autônomas por agentes IA são proibidas
+- este projeto não é adequado para produção
+
+## Créditos e licença
+
+Baseado no DetectionLab de Chris Long, com componentes de Wazuh, Red Canary,
+SigmaHQ, OISF, Zeek, Velociraptor, osquery e Olaf Hartong. Preserve as
+licenças e atribuições de cada fonte descrita no catálogo.
+
+O código deste repositório usa a licença MIT. Conteúdo obtido de terceiros
+permanece sob a licença de sua origem.

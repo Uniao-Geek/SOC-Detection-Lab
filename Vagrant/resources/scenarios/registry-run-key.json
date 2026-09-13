@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "id": "registry-run-key",
+  "title": "User Run key persistence",
+  "kind": "atomic",
+  "attack_technique": "T1547.001",
+  "atomic_guid": "e55be3fd-3521-4610-9d1a-e210e42dcf05",
+  "risk": "medium",
+  "timeout_seconds": 90,
+  "telemetry": ["Sysmon Event ID 13", "Windows Registry", "Wazuh agent"],
+  "expected_alert": "Registry Run key modified",
+  "cleanup": "Delete the Atomic Red Team Run value"
+}

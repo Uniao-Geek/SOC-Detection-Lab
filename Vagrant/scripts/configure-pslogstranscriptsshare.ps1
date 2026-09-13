@@ -26,8 +26,11 @@ $permission = $everyone,"Write,ReadAttributes","ObjectInherit,ContainerInherit",
 $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission
 $acl.AddAccessRule($accessRule)
 
-## TODO: Leaving this commented out so Splunk Forwader can read these files
-## Might be a way to leave this permission intact but still allow Splunk
+$system = [System.Security.Principal.NTAccount] "SYSTEM"
+$permission = $system,"ReadAndExecute","ObjectInherit,ContainerInherit","None","Allow"
+$accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission
+$acl.AddAccessRule($accessRule)
+
 ## Deny "Creator Owner" everything. This prevents users from
 ## viewing the content of previously written files.
 #$creatorOwner = [System.Security.Principal.NTAccount] "Creator Owner"

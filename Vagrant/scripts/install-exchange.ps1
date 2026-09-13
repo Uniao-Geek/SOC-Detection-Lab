@@ -1,12 +1,22 @@
 # Purpose: Downloads and installs Microsoft Exchange
 
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+$commonScript = if (Test-Path "$PSScriptRoot\SocLab.Common.ps1") {
+  "$PSScriptRoot\SocLab.Common.ps1"
+} else {
+  "C:\vagrant\scripts\SocLab.Common.ps1"
+}
+. $commonScript
+$configuration = Get-SocLabConfiguration
+
 $username = 'windomain.local\administrator'
 $password = 'vagrant'
 $securePassword = ConvertTo-SecureString $password -AsPlainText -Force
 $credential = New-Object System.Management.Automation.PSCredential $username, $securePassword
 $exchangeFolder = "C:\exchange2016"
 $exchangeISOPath = "C:\exchange2016\ExchangeServer2016-x64-cu12.iso"
-$exchangeDownloadUrl = "https://download.microsoft.com/download/2/5/8/258D30CF-CA4C-433A-A618-FB7E6BCC4EEE/ExchangeServer2016-x64-cu12.iso"
+$exchangeDownloadUrl = $configuration.EXCHANGE_ISO_URL
 
 If (Test-Path c:\exchange_prereqs_complete.txt) {
   Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) [+] It appears the Exchange prerequisites have been installed already. Continuing installation..."
@@ -26,10 +36,14 @@ $ProgressPreference = 'SilentlyContinue'
 If (-not (Test-Path $exchangeISOPath)) {
   Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) [+] Exchange ISO not found at $exchangeISOPath..."
   Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) [+] Downloading the Exchange 2016 ISO..."
-  Invoke-WebRequest -Uri "$exchangeDownloadUrl" -OutFile $exchangeISOPath
+  Invoke-VerifiedDownload -Uri $exchangeDownloadUrl -Destination $exchangeISOPath -Sha256 $configuration.EXCHANGE_ISO_SHA256
 }
 Else {
   Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) [+] The Exchange ISO was already downloaded. Moving On."
+  $actualHash = (Get-FileHash -LiteralPath $exchangeISOPath -Algorithm SHA256).Hash
+  if ($actualHash -ne $configuration.EXCHANGE_ISO_SHA256) {
+    throw "Exchange ISO SHA-256 validation failed."
+  }
 }
 
 If (!(Get-Volume | Where DriveType -eq "CD-ROM").filesystemlabel -eq "EXCHANGESERVER2016-X64-CU12") {

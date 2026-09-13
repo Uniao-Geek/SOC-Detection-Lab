@@ -1,20 +1,36 @@
-# Purpose: Downloads and unzips a copy of the Palantir WEF Github Repo. This includes WEF subscriptions and custom WEF channels.
+# Downloads a pinned Palantir Windows Event Forwarding snapshot.
 
-Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Downloading and unzipping the Palantir Windows Event Forwarding Repo from Github..."
-
-$wefRepoPath = 'C:\Users\vagrant\AppData\Local\Temp\wef-Master.zip'
-
-If (-not (Test-Path $wefRepoPath))
-{
-    # GitHub requires TLS 1.2 as of 2/1/2018
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    # Disabling the progress bar speeds up IWR https://github.com/PowerShell/PowerShell/issues/2138
-    $ProgressPreference = 'SilentlyContinue'
-    Invoke-WebRequest -Uri "https://github.com/palantir/windows-event-forwarding/archive/master.zip" -OutFile $wefRepoPath
-    Expand-Archive -path "$wefRepoPath" -destinationpath 'c:\Users\vagrant\AppData\Local\Temp' -Force
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+$commonScript = if (Test-Path "$PSScriptRoot\SocLab.Common.ps1") {
+    "$PSScriptRoot\SocLab.Common.ps1"
+} else {
+    "C:\vagrant\scripts\SocLab.Common.ps1"
 }
-else
-{
-    Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) $wefRepoPath already exists. Moving On."
+. $commonScript
+
+$configuration = Get-SocLabConfiguration
+$cacheRoot = "C:\ProgramData\SocDetectionLab\cache"
+$archive = Join-Path $cacheRoot "windows-event-forwarding.zip"
+$staging = Join-Path $cacheRoot "windows-event-forwarding-staging"
+$destination = "C:\Users\vagrant\AppData\Local\Temp\windows-event-forwarding-master"
+$sourceUrl = "https://github.com/palantir/windows-event-forwarding/archive/$($configuration.PALANTIR_WEF_COMMIT).zip"
+
+if (Test-Path -LiteralPath $destination -PathType Container) {
+    Write-Host "Pinned Windows Event Forwarding content already exists."
+    return
 }
-Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Palantir WEF download complete!"
+
+Invoke-VerifiedDownload -Uri $sourceUrl -Destination $archive -Sha256 $configuration.PALANTIR_WEF_SHA256
+Remove-Item -LiteralPath $staging -Recurse -Force -ErrorAction SilentlyContinue
+Expand-Archive -LiteralPath $archive -DestinationPath $staging -Force
+
+$extracted = Get-ChildItem -LiteralPath $staging -Directory
+if ($extracted.Count -ne 1 -or $extracted[0].Name -ne "windows-event-forwarding-$($configuration.PALANTIR_WEF_COMMIT)") {
+    throw "Unexpected Windows Event Forwarding archive layout."
+}
+
+New-Item -ItemType Directory -Path (Split-Path -Parent $destination) -Force | Out-Null
+Move-Item -LiteralPath $extracted[0].FullName -Destination $destination
+Remove-Item -LiteralPath $archive, $staging -Recurse -Force
+Write-Host "Pinned Windows Event Forwarding content installed."

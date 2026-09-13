@@ -8,16 +8,23 @@
 #    This allows you to verify that each step in the installation process was successful
 # 5. Once installation is successful, reboot once more. 
 
-$username = 'windomain.local\administrator'
-$password = 'vagrant'
-$securePassword = ConvertTo-SecureString $password -AsPlainText -Force
-$credential = New-Object System.Management.Automation.PSCredential $username, $securePassword
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+$commonScript = if (Test-Path "$PSScriptRoot\SocLab.Common.ps1") {
+    "$PSScriptRoot\SocLab.Common.ps1"
+} else {
+    "C:\vagrant\scripts\SocLab.Common.ps1"
+}
+. $commonScript
+
+$cacheRoot = "C:\ProgramData\SocDetectionLab\cache"
+New-Item -ItemType Directory -Path $cacheRoot -Force | Out-Null
 $dotNetInstallerUrl = 'https://download.visualstudio.microsoft.com/download/pr/4312fa21-59b0-4451-9482-a1376f7f3ba4/9947fce13c11105b48cba170494e787f/ndp471-kb4033342-x86-x64-allos-enu.exe'
-$dotNetInstallerPath = "$env:TEMP/NDP471-KB4033342-x86-x64-AllOS-ENU.exe"
-$dotNetInstallLog = "$env:TEMP/dotnet_install_log.txt"
+$dotNetInstallerPath = Join-Path $cacheRoot "NDP471-KB4033342-x86-x64-AllOS-ENU.exe"
+$dotNetInstallLog = Join-Path $cacheRoot "dotnet_install_log.txt"
 $cplusplusInstallerUrl = "https://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe"
-$cplusplusInstallerPath = "$env:TEMP/vcredist_x64.exe"
-$cplusplusLogPath = "$env:TEMP/cplusplus_install_log.txt"
+$cplusplusInstallerPath = Join-Path $cacheRoot "vcredist_x64.exe"
+$cplusplusLogPath = Join-Path $cacheRoot "cplusplus_install_log.txt"
 $maxSleepTime = 900 
 $physicalMemory = get-ciminstance -class "cim_physicalmemory" | % { $_.Capacity } | Select-Object -Last 1
 
@@ -96,8 +103,13 @@ If (-not(Test-Path c:\exchange_prereqs_complete.txt)) {
         $ProgressPreference = 'SilentlyContinue'
         Invoke-WebRequest -Uri "$dotNetInstallerUrl" -OutFile $dotNetInstallerPath
         Invoke-WebRequest -Uri "$cplusplusInstallerUrl" -OutFile $cplusplusInstallerPath
+        Assert-TrustedMsiSignature -Path $dotNetInstallerPath -AllowedPublishers @("Microsoft Corporation")
+        Assert-TrustedMsiSignature -Path $cplusplusInstallerPath -AllowedPublishers @("Microsoft Corporation")
         Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Running .NET 4.7.1 installer..."
-        . $dotNetInstallerPath /q /norestart /log $dotNetInstallLog -Wait
+        $dotNetProcess = Start-Process -FilePath $dotNetInstallerPath -ArgumentList @("/q", "/norestart", "/log", "`"$dotNetInstallLog`"") -Wait -PassThru
+        if ($dotNetProcess.ExitCode -notin @(0, 3010)) {
+            throw ".NET installation failed with exit code $($dotNetProcess.ExitCode)."
+        }
         while (-not(Test-Path $dotNetInstallLog)) {
             Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Waiting for the .NET install log to appear..."
             If ($secondsPassed -eq 0) {
@@ -126,7 +138,10 @@ If (-not(Test-Path c:\exchange_prereqs_complete.txt)) {
     # Install C++ 2013
     If (-not(Get-WmiObject -Class Win32_Product | Where-Object Name -like "Microsoft Visual C++ 2013*")) {
         Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Installing .NET C++ 2013 Redistributable Package..."
-        . $cplusplusInstallerPath /q /norestart /log $cplusplusLogPath -Wait
+        $cplusplusProcess = Start-Process -FilePath $cplusplusInstallerPath -ArgumentList @("/q", "/norestart", "/log", "`"$cplusplusLogPath`"") -Wait -PassThru
+        if ($cplusplusProcess.ExitCode -notin @(0, 3010)) {
+            throw "Visual C++ installation failed with exit code $($cplusplusProcess.ExitCode)."
+        }
         while (-not(Test-Path $cplusplusLogPath)) {
             Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) Waiting for the C++ 2013 install log to appear..."
             Start-Sleep -Seconds 5
@@ -150,16 +165,6 @@ If (-not(Test-Path c:\exchange_prereqs_complete.txt)) {
     Set-Service wuauserv -StartupType Disabled
     Set-Service TrustedInstaller -StartupType Disabled
     Stop-Service TrustedInstaller
-
-    # Installing Splunk Inputs
-    Write-Host "$('[{0:HH:mm}]' -f (Get-Date)) [+] Adding Splunk inputs for Exchange"
-
-    If (-not (Test-Path "C:\Program Files\SplunkUniversalForwarder\etc\apps\Splunk_TA_windows\local\")) {
-        New-Item -ItemType Directory -Force -Path "C:\Program Files\SplunkUniversalForwarder\etc\apps\Splunk_TA_windows\local\"
-    }
-    
-    $inputsPath = "C:\Program Files\SplunkUniversalForwarder\etc\apps\Splunk_TA_windows\local\inputs.conf"
-    Copy-Item c:\vagrant\resources\splunk_forwarder\exchange_inputs.conf $inputsPath -Force
 
     # Create a file so this script knows to skip pre-req installation upon next run.
     New-Item -Path "c:\exchange_prereqs_complete.txt" -ItemType "file"
