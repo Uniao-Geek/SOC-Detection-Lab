@@ -37,6 +37,44 @@
 - Windows: `D:\Projetos-SafeLabs\submodules\Uniao-Geek\SOC-Detection-Lab`
 - Linux: `/mnt/predator/Projetos-SafeLabs/submodules/Uniao-Geek/SOC-Detection-Lab`
 
+## [2026-09-12 23:30] - Confirmação final do commit
+
+### Estado ao encerrar
+- Commit principal confirmado: `dadab19` (`Make SOC lab Wazuh-only on VirtualBox`).
+- A entrada de registro das 23:29 foi adicionada fora da ordem cronológica, mas seu conteúdo permanece válido; esta entrada final preserva a continuidade append-only.
+
+### Próximo passo imediato
+- Executar a homologação `wazuh-core` quando houver pelo menos 10 GB de RAM livre.
+
+### Pendências conhecidas
+- [ ] Validar o provisionamento real e os fluxos de alerta Wazuh.
+
+### Ambiente necessário
+- VirtualBox, Vagrant, Packer, PowerShell e Python.
+
+### Paths importantes
+- Windows: `D:\Projetos-SafeLabs\submodules\Uniao-Geek\SOC-Detection-Lab`
+- Linux: `/mnt/predator/Projetos-SafeLabs/submodules/Uniao-Geek/SOC-Detection-Lab`
+
+## [2026-09-12 23:29] - Registro do commit Wazuh-only
+
+### Estado ao encerrar
+- Commit realizado: `dadab19` (`Make SOC lab Wazuh-only on VirtualBox`).
+- O commit contém a migração Wazuh, a remoção de providers legados e a limpeza de artefatos sensíveis/obsoletos.
+
+### Próximo passo imediato
+- Homologar `wazuh-core` quando o host tiver pelo menos 10 GB de RAM livre.
+
+### Pendências conhecidas
+- [ ] Executar o primeiro provisionamento completo e registrar eventuais ajustes de runtime.
+
+### Ambiente necessário
+- VirtualBox, Vagrant, Packer, PowerShell e Python.
+
+### Paths importantes
+- Windows: `D:\Projetos-SafeLabs\submodules\Uniao-Geek\SOC-Detection-Lab`
+- Linux: `/mnt/predator/Projetos-SafeLabs/submodules/Uniao-Geek/SOC-Detection-Lab`
+
 ## [2026-09-12 23:09] - Antes da remoção de providers e Splunk
 
 ### Estado antes da operação destrutiva
@@ -75,6 +113,25 @@
 - Windows 10/11, PowerShell 5.1+, VirtualBox 7.2+, Vagrant 2.3+, Packer e Python 3.
 - Variáveis opcionais: `SOC_PROFILE`, `SOC_GUI`, `SOC_LLM_ENDPOINT`, `SOC_LLM_MODEL`, `SOC_LLM_ALLOWED_HOSTS`.
 - Nenhuma credencial ou configuração cloud é necessária.
+
+### Paths importantes
+- Windows: `D:\Projetos-SafeLabs\submodules\Uniao-Geek\SOC-Detection-Lab`
+- Linux: `/mnt/predator/Projetos-SafeLabs/submodules/Uniao-Geek/SOC-Detection-Lab`
+
+## [2026-09-12 23:31] - Fechamento cronológico
+
+### Estado ao encerrar
+- Commit principal confirmado: `dadab19` (`Make SOC lab Wazuh-only on VirtualBox`).
+- As entradas 23:29 e 23:30 ficaram fora da ordem por correspondência de contexto durante o append; nenhuma entrada anterior foi removida.
+
+### Próximo passo imediato
+- Homologar `wazuh-core` quando houver pelo menos 10 GB de RAM livre.
+
+### Pendências conhecidas
+- [ ] Executar o primeiro provisionamento completo e registrar ajustes de runtime.
+
+### Ambiente necessário
+- VirtualBox, Vagrant, Packer, PowerShell e Python.
 
 ### Paths importantes
 - Windows: `D:\Projetos-SafeLabs\submodules\Uniao-Geek\SOC-Detection-Lab`
