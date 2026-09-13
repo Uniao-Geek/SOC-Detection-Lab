@@ -136,3 +136,23 @@
 ### Paths importantes
 - Windows: `D:\Projetos-SafeLabs\submodules\Uniao-Geek\SOC-Detection-Lab`
 - Linux: `/mnt/predator/Projetos-SafeLabs/submodules/Uniao-Geek/SOC-Detection-Lab`
+
+## [2026-09-13 00:42] - Publicação no GitHub
+
+### Estado ao encerrar
+- Commits `dadab19` e `451718e` publicados em `origin/main`.
+- Remoto confirmado: `https://github.com/Uniao-Geek/SOC-Detection-Lab.git`.
+- Nenhuma VM foi iniciada durante a publicação.
+
+### Próximo passo imediato
+- Homologar `wazuh-core` com apoio assistido quando houver pelo menos 10 GB de RAM livre.
+
+### Pendências conhecidas
+- [ ] Executar o primeiro provisionamento completo e registrar ajustes de runtime.
+
+### Ambiente necessário
+- VirtualBox, Vagrant, Packer, PowerShell e Python.
+
+### Paths importantes
+- Windows: `D:\Projetos-SafeLabs\submodules\Uniao-Geek\SOC-Detection-Lab`
+- Linux: `/mnt/predator/Projetos-SafeLabs/submodules/Uniao-Geek/SOC-Detection-Lab`
